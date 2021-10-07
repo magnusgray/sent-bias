@@ -24,6 +24,7 @@ import encoders.infersent as infersent
 import encoders.gensen as gensen
 import encoders.elmo as elmo
 import encoders.bert as bert
+import encoders.hftrans as hftrans
 
 
 class ModelName(Enum):
@@ -35,6 +36,7 @@ class ModelName(Enum):
     BERT = 'bert'
     COVE = 'cove'
     OPENAI = 'openai'
+    CUSTOM = 'custom'
 
 TEST_EXT = '.jsonl'
 MODEL_NAMES = [m.value for m in ModelName]
@@ -131,6 +133,10 @@ def handle_arguments(arguments):
     bert_group = parser.add_argument_group(ModelName.BERT.value, 'Options for BERT model')
     bert_group.add_argument('--bert_version', type=str, choices=BERT_VERSIONS,
                             help="Version of BERT to use.", default="bert-large-cased")
+
+    custom_group = parser.add_argument_group(ModelName.CUSTOM.value, 'Options for Custom model')
+    custom_group.add_argument('--model_path', type=str,
+                              help="Path to custom model to load.")
 
     return parser.parse_args(arguments)
 
@@ -232,6 +238,10 @@ def main(arguments):
         elif model_name == ModelName.OPENAI.value:
             if args.openai_encs is None:
                 raise Exception('openai_encs must be specified for {} model'.format(model_name))
+            model_options = ''
+        elif model_name == ModelName.CUSTOM.value:
+            if args.model_path is None:
+                raise Exception('Custom model must specify a path (--model_path)')
             model_options = ''
         else:
             raise ValueError("Model %s not found!" % model_name)
@@ -358,6 +368,13 @@ def main(arguments):
                     encs_targ2 = encs["targ2"]["encs"]
                     encs_attr1 = encs["attr1"]["encs"]
                     encs_attr2 = encs["attr2"]["encs"]
+
+                elif model_name == ModelName.CUSTOM.value:
+                    model, tokenizer = hftrans.load_model(args.model_path)
+                    encs_targ1 = hftrans.encode(model, tokenizer, encs["targ1"]["examples"])
+                    encs_targ2 = hftrans.encode(model, tokenizer, encs["targ2"]["examples"])
+                    encs_attr1 = hftrans.encode(model, tokenizer, encs["attr1"]["examples"])
+                    encs_attr2 = hftrans.encode(model, tokenizer, encs["attr2"]["examples"])
 
                 else:
                     raise ValueError("Model %s not found!" % model_name)

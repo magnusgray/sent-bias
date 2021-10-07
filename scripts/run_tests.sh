@@ -38,6 +38,8 @@ SEED=1111
 #python sentbias/main.py --log_file ${SAVE_DIR}/log.log -t ${TESTS} -m openai --exp_dir ${SAVE_DIR} --data_dir tests/ --openai_encs encodings/openai/ -s ${SEED} --results_path openai.tsv --dont_cache_encs --ignore_cached_encs
 
 # BERT
-#python sentbias/main.py --log_file ${SAVE_DIR}/log.log -t ${TESTS} -m bert --bert_version large --exp_dir ${SAVE_DIR} --data_dir tests/ --glove_path ${GLOVE_PATH} -s ${SEED} --ignore_cached_encs
+# -m debugpy --listen 5678 --wait-for-client
+python sentbias/main.py --log_file logs/log.log -t ${TESTS} -m custom --model_path /home/racruzmo/projects/glue_data/MNLI/output1 --exp_dir saves --data_dir tests/ --glove_path /home/racruzmo/projects/glove/glove.840B.300d.txt -s ${SEED} --ignore_cached_encs
+#python sentbias/main.py --log_file logs/log.log -t ${TESTS} -m bert --bert_version bert-base-uncased --exp_dir saves --data_dir tests/ --glove_path /home/racruzmo/projects/glove/glove.840B.300d.txt -s ${SEED} --ignore_cached_encs
 #python sentbias/main.py --log_file ${SAVE_DIR}/log.log -t ${TESTS} -m bert --bert_version base --exp_dir ${SAVE_DIR} --data_dir tests/ --glove_path ${GLOVE_PATH} -s ${SEED} --ignore_cached_encs
 
